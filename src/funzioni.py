@@ -55,14 +55,13 @@ def peakfinder(data, n_picchi=15, prop=None,sortby='peak_heights'):
     return datalist
 
 
-def featextract1(datalist, statlist=tuple(['mean', 'std']),
-                 proplist=tuple(['peak_heights', 'prominences', 'K']), index=tuple(names_col[1:])):
+def featextract1(datalist, statlist=tuple(['mean', 'std']), proplist=('peak_heights', 'prominences', 'K'), index=tuple(names_col[1:])):
     """ trasforma la lista di dataframe con i vari picchi e proprietà per spettro in un
        dataframe unico con feature riassuntive per ogni spettro
 
       -statiist : lista di statistiche da utilizzare tra gli indici del risultato di describe
       -proplist : lista di proprietà dei picchi da tenere
-      -index : è una lista di nomi e posizioni degli spettri
+      -index : è una lista di nomi legati ale posizioni fisiche degli spettri
       """
     if 'count' in statlist:
         statlist.remove('count')
@@ -73,12 +72,12 @@ def featextract1(datalist, statlist=tuple(['mean', 'std']),
     numpicchi = []
     for i in datalist:
         test = i
-        test = test.get(proplist).describe().loc[statlist,:]
+        test = test.get(list(proplist)).describe().loc[statlist, :]
         for x in proplist:
             for k in statlist:
                 dic[x + '_' + k].append(test.loc[k, x])
 
-        numpicchi.append(i.get(proplist).describe().loc['count'][0])
+        numpicchi.append(i.get(list(proplist)).describe().loc['count'][0])
 
 
     for key in dic:
@@ -88,3 +87,6 @@ def featextract1(datalist, statlist=tuple(['mean', 'std']),
         dic['count']=numpicchi
 
     return pd.DataFrame(dic)
+
+
+# def distpoint(df)

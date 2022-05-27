@@ -1,11 +1,15 @@
 import pandas as pd
 
 
-paths = ['data\S1_bkg_mapA_11x11.txt',
-         'data\S1_mapA_11x11.txt',
-         'data\S2_bkg_mapA_11x11.txt',
-         'data\S2_mapA_11x11.txt']
+paths = ['.\data\S1_bkg_mapA_11x11.txt',
+         '.\data\S1_mapA_11x11.txt',
+         '.\data\S2_bkg_mapA_11x11.txt',
+         '.\data\S2_mapA_11x11.txt']
+#abspaths=[]
+#for i in paths:
+#    abspaths.append(os.path.abspath(i))
 
+# nomi standard per campioni di questo tipo, per molte cose è importante che siano così [non flessibile]
 names_col = ['K'] + [f'row{i}col{j}' for i in range(1, 12) for j in range(1, 12)]
 
 data1bkg = pd.read_csv(paths[0], names=names_col, delim_whitespace=True)
