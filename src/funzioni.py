@@ -1,6 +1,10 @@
 from scipy.signal import find_peaks
 from scipy import integrate
 import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.spatial.distance import cdist,pdist
 
 names_col = ['K'] + [f'row{i}col{j}' for i in range(1, 12) for j in range(1, 12)]
 
@@ -89,4 +93,28 @@ def featextract1(datalist, statlist=tuple(['mean', 'std']), proplist=('peak_heig
     return pd.DataFrame(dic)
 
 
-# def distpoint(df)
+def distpoint(labels_ordinated):
+    """ DAI SI CAPISCE, DEVO FARLO
+     LABELS : labels di un clustering che siano ordinate secondo lo stesso schema unitlizzato dai campioni per le righe
+     lo stesso che utilizzo negli script e cche non dovrebbe essere cambiato nell'eseguire gli stessi"""
+
+    l = [(x, y) for x in range(1, 12) for y in range(1, 12)]
+    grid = np.array(l).astype(float)
+    plt.xlim(0,14)
+    plt.ylim(0,14)
+    fig = plt.gcf()
+    fig.set_size_inches(10,8)
+    sns.scatterplot(x = grid[:,0], y = grid[:,1] , hue = labels_ordinated)
+
+    return None
+
+def index_translate(index):
+    temp=[]
+    for x in index:
+        temp.append(x[3:])
+    points = []
+    for y in temp:
+        points.append((y[0],y[-1]))
+
+    points = np.array(points).astype(float)
+    return points
