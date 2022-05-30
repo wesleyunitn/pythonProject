@@ -1,5 +1,4 @@
-
-from sklearn.cluster import KMeans,DBSCAN
+from sklearn.cluster import KMeans, DBSCAN
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.cluster import silhouette_score
 from sklearn.decomposition import PCA
@@ -8,7 +7,8 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def km_cluster_plt(feat , pca: int = None, n_max_clusters = 11,plot = False):
+
+def km_cluster_plt(feat, pca: int = None, n_max_clusters=11, plot=False):
     """
 fa un fit di n_max_clusters -1 KMeans classifier con un numero di cluster da 2 a n_max_clusters
 e plotta l'andamento del coefficente .inertia degli stessi per capire subito quale numero di clusters conviene
@@ -18,21 +18,20 @@ e plotta l'andamento del coefficente .inertia degli stessi per capire subito qua
     @return: lista di oggetti KMeans fittati
     """
     if pca is not None:
-        scaler= StandardScaler()
+        scaler = StandardScaler()
         Pca = PCA(n_components=pca)
         Xpca = Pca.fit_transform(scaler.fit_transform(feat))
-    else :
+    else:
         Xpca = feat
     listkmeans = []
-    for n in range(2,n_max_clusters):
-        kmeans= KMeans(n_clusters=n,random_state=12)
+    for n in range(2, n_max_clusters):
+        kmeans = KMeans(n_clusters=n, random_state=12)
         kmeans.fit(Xpca)
-        print(f'{np.unique(kmeans.labels_,return_counts=True)}')
+        # print(f'{np.unique(kmeans.labels_,return_counts=True)}')
         print(f'con {n} clusters : {silhouette_score(Xpca, kmeans.labels_)}')
         listkmeans.append(kmeans)
 
-
-    print(f"{[listkmeans[n].inertia_ - listkmeans[n + 1].inertia_ for n in range(len(listkmeans) - 1)]}")
+    # print(f"{[listkmeans[n].inertia_ - listkmeans[n + 1].inertia_ for n in range(len(listkmeans) - 1)]}")
     if plot:
         yi = [arr.inertia_ for arr in listkmeans]
         sns.lineplot(x=np.array(range(2, n_max_clusters)), y=yi, marker='o')
@@ -40,27 +39,21 @@ e plotta l'andamento del coefficente .inertia degli stessi per capire subito qua
     return listkmeans
 
 
+def db_cluster_plt(feat, n_components=2, min_samples=5, eps=0.3, delta_search_multiplier=0.2, n_search=10):
+    dblist = []
+    for x in np.linspace(eps - delta_search_multiplier * eps, eps + delta_search_multiplier * eps, n_search):
+        scaler = StandardScaler()
+        pca = PCA(n_components=n_components, random_state=12)
+        featpca = pca.fit_transform(scaler.fit_transform(feat))
+        db = DBSCAN(min_samples=min_samples, eps=x )
+        db.fit(featpca)
+        print(f'con eps =  {x} abbiamo {np.unique(db.labels_,return_counts=True)} clusters e lo score : {silhouette_score(featpca,db.labels_)}')
 
+        dblist.append(db)
 
-
-
-
-def db_cluster_plt(feat,n_components=2,min_samples=5,eps=0.3):
-
-    scaler = StandardScaler()
-    pca = PCA(n_components=n_components)
-    featpca  = pca.fit_transform(scaler.fit_transform(feat))
-    db = DBSCAN(min_samples=min_samples,eps=eps)
-    db.fit(featpca)
     # sns.scatterplot(x = featpca[:,0],y=featpca[:,1],hue = db.labels_)
 
-    return db
-
-
-
-
-
-
+    return dblist
 
 #
 #
