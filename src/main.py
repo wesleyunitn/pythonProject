@@ -19,9 +19,9 @@ picchi1.feat1 = picchi1.featextract(cols=['prominences', 'K', 'peak_heights'], s
 
 kmeanslist1 = cluster_routine.km_cluster_plt(picchi1.feat1)
 # picchi1.feat1['labels_dbscan'] = cluster_routine.db_cluster_plt(picchi1.feat1, n_components=3).labels_
-# picchi1.feat1['labels_km'] = kmeanslist1[5].labels_
-dblist = cluster_routine.db_cluster_plt(picchi1.feat1, n_components=3,  n_search=10, eps= 0.6, delta_search_multiplier=0.1)
-
+picchi1.feat1['labels_km'] = kmeanslist1[5].labels_
+# dblist = cluster_routine.db_cluster_plt(picchi1.feat1, n_components=3,  n_search=10, eps= 0.6, delta_search_multiplier=0.1)
+print(f'{kmeanslist1[3].cluster_centers_}')
 
 
 

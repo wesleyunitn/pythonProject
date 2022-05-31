@@ -59,7 +59,7 @@ def peakfinder(data, n_picchi=15, prop=None,sortby='peak_heights'):
     return datalist
 
 
-def featextract1(datalist, statlist=tuple(['mean', 'std']), proplist=('peak_heights', 'prominences', 'K'), index=tuple(names_col[1:])):
+def featextract1(datalist, statlist=tuple(['mean', 'std']), proplist=('peak_heights', 'prominences', 'K','widths'), index=tuple(names_col[1:])):
     """ trasforma la lista di dataframe con i vari picchi e proprietà per spettro in un
        dataframe unico con feature riassuntive per ogni spettro
 
