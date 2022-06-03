@@ -93,9 +93,10 @@ def featextract1(datalist, statlist=tuple(['mean', 'std']), proplist=('peak_heig
     return pd.DataFrame(dic)
 
 
+
 def distpoint(labels_ordinated):
-    """ DAI SI CAPISCE, DEVO FARLO
-     LABELS : labels di un clustering che siano ordinate secondo lo stesso schema unitlizzato dai campioni per le righe
+    """ plotta un griglia per visualizzare il campione 11X11 ragruppati in labels predette da un cluster
+     :param LABELS : labels di un clustering che siano ----IMPO: ordinate secondo lo stesso schema unitlizzato dai campioni per le righe
      lo stesso che utilizzo negli script e cche non dovrebbe essere cambiato nell'eseguire gli stessi"""
 
     l = [(x, y) for x in range(1, 12) for y in range(1, 12)]
@@ -109,6 +110,11 @@ def distpoint(labels_ordinated):
     return None
 
 def index_translate(index):
+    """ traduce un alista di identificativ idi uno spettro con unalista di punti in due dimensioni che ne mappa la posizione sulla grligra [in unità micron]
+
+    @param index: lista di indici (string) del tipo (rowncolm for n,m in 1-11)
+    @return: lista di punti come np.array(dtype=float)
+    """
     temp=[]
     for x in index:
         temp.append(x[3:])

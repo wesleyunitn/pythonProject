@@ -32,6 +32,7 @@ class Spettri():
         self.npicchi = npicchi
         self.cond = cond
         self.sortby = sortby
+
           # lo aggiungo da subito dfato che la normalizzazione non è un opzione nel mio modello
 
 
@@ -93,7 +94,7 @@ class Spettri():
             if j != 'K':
                 self.data[j] = self.data[j] / integrate.trapz(self.data[j], x=self.data.K)
 
-        return self.data.head()
+        return None
 
 
     def featextract(self,cols=('prominences','peak_heights','K','widths'),statlist=('mean','std')):
@@ -109,8 +110,8 @@ class Spettri():
 
         dic = {key + '_' + stat: [] for key in cols for stat in statlist}
         numpicchi = []  # utile solo con count=True
-        for i in self.picchi:
-            test = i
+        for i in self.picchi.values():
+            test = pd.DataFrame(i)  # per non cambiare il valore di i e quindi del dataframe di picchi iesimo per sbaglio
             test = test.get(list(cols)).describe().loc[statlist, :]
             for x in cols:
                 for k in statlist:

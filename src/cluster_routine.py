@@ -9,14 +9,19 @@ import matplotlib.pyplot as plt
 
 
 def km_cluster_plt(feat, pca: int = None, n_max_clusters=11, plot=False):
-    """
-fa un fit di n_max_clusters -1 KMeans classifier con un numero di cluster da 2 a n_max_clusters
-e plotta l'andamento del coefficente .inertia degli stessi per capire subito quale numero di clusters conviene
-    @param feat:
-    @param pca:
-    @param n_max_clusters:
+    """ fa un fit di (n_max_clusters -1) KMeans classifier con un numero di cluster da 2 a n_max_clusters
+e plotta l'andamento del coefficente .inertia degli stessi per 'capire subito quale numero di clusters conviene'
+    @param feat: attributo .feature della classe .Spettri()
+    @param pca: numero di componenti da tenere per fare la pca if None non si fa la pca
+    @param n_max_clusters: numero massimo di cluster da considerare per creare la lisrta di KMeans object,, sempre a partire da due
+    -----------------------------------------------------------
+
     @return: lista di oggetti KMeans fittati
     """
+    if pca > len(feat.columns):
+        print('Non posso prendere più componenti del numero di feature dei dati da trasformare')
+        pca = len(feat.columns)
+
     if pca is not None:
         scaler = StandardScaler()
         Pca = PCA(n_components=pca)
