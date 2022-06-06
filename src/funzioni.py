@@ -110,7 +110,7 @@ def distpoint(labels_ordinated):
     return None
 
 def index_translate(index):
-    """ traduce un alista di identificativ idi uno spettro con unalista di punti in due dimensioni che ne mappa la posizione sulla grligra [in unità micron]
+    """ traduce un alista di identificativi di uno spettro con unalista di punti in due dimensioni che ne mappa la posizione sulla grligra [in unità micron]
 
     @param index: lista di indici (string) del tipo (rowncolm for n,m in 1-11)
     @return: lista di punti come np.array(dtype=float)
@@ -124,3 +124,18 @@ def index_translate(index):
 
     points = np.array(points).astype(float)
     return points
+
+
+def spatial_score(feat_lab,labels_col= 'labels'):
+    ''' accetta un dataframe tipo .feature di classe.Spettri() con una sola colonna di labels nominata come labels_col
+
+    @param feat_lab:
+    @param labels_col:
+    @return:
+    '''
+    ris = dict()
+    uniq_lab = np.unique(feat_lab[labels_col])
+    for i in uniq_lab:
+        index = index_translate(feat_lab[feat_lab[labels_col] == i].index)
+        ris[f'cluster_{i}_dist'] = np.mean(pdist(index))
+    return ris

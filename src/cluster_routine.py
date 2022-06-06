@@ -1,6 +1,6 @@
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.cluster import silhouette_score
+from sklearn.metrics.cluster import silhouette_score,davies_bouldin_score
 from sklearn.decomposition import PCA
 
 import numpy as np
@@ -14,6 +14,7 @@ e plotta l'andamento del coefficente .inertia degli stessi per 'capire subito qu
     @param feat: attributo .feature della classe .Spettri()
     @param pca: numero di componenti da tenere per fare la pca if None non si fa la pca
     @param n_max_clusters: numero massimo di cluster da considerare per creare la lisrta di KMeans object,, sempre a partire da due
+    @param plot: Bool: parametro per fare il plot
     -----------------------------------------------------------
 
     @return: lista di oggetti KMeans fittati
@@ -33,7 +34,8 @@ e plotta l'andamento del coefficente .inertia degli stessi per 'capire subito qu
         kmeans = KMeans(n_clusters=n, random_state=12)
         kmeans.fit(Xpca)
         # print(f'{np.unique(kmeans.labels_,return_counts=True)}')
-        print(f'con {n} clusters : {silhouette_score(Xpca, kmeans.labels_)}')
+        print(f'con {n} clusters, davies_bouldin_score : {davies_bouldin_score(Xpca, kmeans.labels_):.2f}')
+        print(f'con {n} clusters, silohuette_score : {silhouette_score(Xpca, kmeans.labels_):.2f}')
         listkmeans.append(kmeans)
 
     # print(f"{[listkmeans[n].inertia_ - listkmeans[n + 1].inertia_ for n in range(len(listkmeans) - 1)]}")
@@ -52,7 +54,8 @@ def db_cluster_plt(feat, n_components=2, min_samples=5, eps=0.3, delta_search_mu
         featpca = pca.fit_transform(scaler.fit_transform(feat))
         db = DBSCAN(min_samples=min_samples, eps=x )
         db.fit(featpca)
-        print(f'con eps =  {x} abbiamo {np.unique(db.labels_,return_counts=True)} clusters e lo score : {silhouette_score(featpca,db.labels_)}')
+        print(f'con eps =  {x} abbiamo {np.unique(db.labels_, return_counts=True)} clusters e davies_bouldin_score : {davies_bouldin_score(featpca,db.labels_):.2f}')
+        print(f'con eps =  {x} abbiamo {np.unique(db.labels_,return_counts=True)} clusters e silhouette_score : {silhouette_score(featpca,db.labels_):.2f}')
 
         dblist.append(db)
 
