@@ -20,7 +20,7 @@ l'utilizzo delle classi e il percorso concettuale svolto
 
 
 - [X] cluster basic routine
-- [ ] evaluating cluster
+- [X] evaluating cluster
 - [ ] cluster avanced
 - [ ] classification basic
 - [ ] classification advanced
