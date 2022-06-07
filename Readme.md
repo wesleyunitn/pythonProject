@@ -21,6 +21,6 @@ l'utilizzo delle classi e il percorso concettuale svolto
 
 - [X] cluster basic routine
 - [X] evaluating cluster
-- [ ] cluster avanced
+- [X] cluster avanced
 - [ ] classification basic
 - [ ] classification advanced
