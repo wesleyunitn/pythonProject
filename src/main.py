@@ -3,35 +3,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from src.data_load import *
 from src import cluster_routine
-
-# CREO DUE ISTANZE DI PICCHI DAGLI STESSI DATI CON CONDIZIONI DIVERSE
-# picchi fissati
-
-picchi1 = Spettri(data1, npicchi=None, prop={'height': 10 ^ -5, 'prominence': 10 ^ -5})
-
-# picchi1.normalizer()
-picchi1.peakfinder()
-# plt.xlabel('N_clusters')
-# plt.title('campione1')
-# cluster_routine.km_cluster_plt(picchi1.featextract(cols=['peak_heights','K','prominences'],statlist=['mean','std','count']),pca=2)
-
-picchi1.feat1 = picchi1.featextract(cols=['prominences', 'K', 'peak_heights'], statlist=['mean', 'std', 'count'])
-
-kmeanslist1 = cluster_routine.km_cluster_plt(picchi1.feat1)
-# picchi1.feat1['labels_dbscan'] = cluster_routine.db_cluster_plt(picchi1.feat1, n_components=3).labels_
-picchi1.feat1['labels_km'] = kmeanslist1[5].labels_
-# dblist = cluster_routine.db_cluster_plt(picchi1.feat1, n_components=3,  n_search=10, eps= 0.6, delta_search_multiplier=0.1)
-print(f'{kmeanslist1[3].cluster_centers_}')
+import funzioni
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
+#DATI CON CONDIZIONI DIVERSEes'],statlist=['mean','std','count']),pca=2)
+import numpy as np
+picchi2 = Spettri(data1, npicchi = 5)
+picchi2.peakfinder()
+picchi2.featextract()
+picchi2.featextract2()
+km2_list = cluster_routine.km_cluster_plt(picchi2.feature2, pca = 2)
+# db2_list = cluster_routine.db_cluster_plt(picchi2.feature2, eps = 1, min_samples=3, n_components=3)
+# km1_list = cluster_routine.km_cluster_plt(picchi1.feature, pca = 3,plot= True)
+#
+# cos1 = funzioni.spatial_score(picchi1.feature,km1_list[6].labels_)
+cos2 =  funzioni.spatial_score(picchi2.feature2, km2_list[3].labels_)
+#
 
 
-
-
-# sns.pairplot(data=picchi1.feat1, vars=['prominences_mean', 'count', 'K_mean', 'peak_heights_mean'], hue='labels_dbscan')
-
-
-# print(np.unique(feat.set_index(['labels']).index,return_counts=True))
-# picchi2 = Spettri(data2, npicchi = 40,)
-# picchi2.normalizer()
-# picchi2.peakfinder()
-# print(picchi2.picchi[0])
-# kmeanslist2 = cluster_routine.km_cluster_plt(picchi2.featextract(cols=['prominences','K'],))
+param = {'pca__n_components':[2,3,4,8],'dbscan__eps': np.linspace(10**-3,1, 10)}
+gsearchdb = GridSearchCV(km2_list,param_grid=param, scoring = None)
+gsearchdb.fit(picchi2.feature)
+print(gsearchdb.best_params_)

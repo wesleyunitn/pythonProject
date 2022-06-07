@@ -52,7 +52,7 @@ class Spettri():
 
         peakobj = find_peaks(serie, **self.prop)
         # DEVO MODIFICARE, NEL CASO PROP FOSSE NONE PER NON AVERE ERRORE
-        da = pd.DataFrame(peakobj[1])
+        da = pd.DataFrame(peakobj[1], copy = True)
         da['peak_ind' + f'_{serie.name}'] = peakobj[0]
 
         if self.sortby is not None:
@@ -111,7 +111,7 @@ class Spettri():
         dic = {key + '_' + stat: [] for key in cols for stat in statlist}
         numpicchi = []  # utile solo con count=True
         for i in self.picchi.values():
-            test = pd.DataFrame(i)  # per non cambiare il valore di i e quindi del dataframe di picchi iesimo per sbaglio
+            test = pd.DataFrame(i, copy = True)  # per non cambiare il valore di i e quindi del dataframe di picchi iesimo per sbaglio
             test = test.get(list(cols)).describe().loc[statlist, :]
             for x in cols:
                 for k in statlist:
@@ -125,7 +125,37 @@ class Spettri():
         if count:
             dic['count'] = numpicchi
 
-        self.feature = pd.DataFrame(dic)
-        return pd.DataFrame(dic)
+        self.feature = pd.DataFrame(dic, copy = True)
+        return pd.DataFrame(dic, copy = True)
+
+
+
+
+    def featextract2(self, prop = ['K','peak_heights','prominences']):
+        ''' Sara utilizzabile solo se tutti gli spettri hanno lo stesso numero di picchi in (.picchi)
+        IMPORTANTE E' SCONSIGLIATO  USARE NUMERI DI PICCHI TROPPO ALTI (OLTRE 10)'''
+        design_df = pd.DataFrame()
+
+        for key in self.picchi.keys(): # passa in rassegna gli spettri
+            ind = []
+            l = []
+
+            for n in range(self.npicchi):  # passa in rassegna le righe
+
+                for x in prop:  # passa in rassegna le colonne
+                    l.append(self.picchi[key][x][n])
+                    ind.append(f'pk_{n+1}_{x}')
+
+            toapp = {str: [val] for str,val in zip(ind,l)}
+
+            design_df =  pd.concat([design_df, pd.DataFrame(toapp)] , ignore_index= True) # concatena le prop di ogni picco
+
+        design_df.index = self.index[1:]
+        self.feature2 = design_df
+
+
+
+
+
 
     # def cluster_plot(self):

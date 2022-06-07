@@ -1,10 +1,10 @@
 import pandas as pd
 
 
-paths = ['.\data\S1_bkg_mapA_11x11.txt',
-         '.\data\S1_mapA_11x11.txt',
-         '.\data\S2_bkg_mapA_11x11.txt',
-         '.\data\S2_mapA_11x11.txt']
+paths = ['..\data\S1_bkg_mapA_11x11.txt',
+         '..\data\S1_mapA_11x11.txt',
+         '..\data\S2_bkg_mapA_11x11.txt',
+         '..\data\S2_mapA_11x11.txt']
 #abspaths=[]
 #for i in paths:
 #    abspaths.append(os.path.abspath(i))

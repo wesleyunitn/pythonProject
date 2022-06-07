@@ -116,7 +116,8 @@ def index_translate(index):
     @return: lista di punti come np.array(dtype=float)
     """
     temp=[]
-    for x in index:
+    ind = list(index)
+    for x in ind:
         temp.append(x[3:])
     points = []
     for y in temp:
@@ -126,16 +127,21 @@ def index_translate(index):
     return points
 
 
-def spatial_score(feat_lab,labels_col= 'labels'):
-    ''' accetta un dataframe tipo .feature di classe.Spettri() con una sola colonna di labels nominata come labels_col
+def spatial_score(feat_lab,labels_col):
+    ''' accetta un dataframe tipo .feature di classe.Spettri()
 
     @param feat_lab:
     @param labels_col:
     @return:
     '''
     ris = dict()
-    uniq_lab = np.unique(feat_lab[labels_col])
+    feat  = pd.DataFrame(feat_lab,copy = True)
+    feat['labels']= labels_col
+    uniq_lab = np.unique(feat['labels'])
     for i in uniq_lab:
-        index = index_translate(feat_lab[feat_lab[labels_col] == i].index)
+        index=[]
+        index = index_translate(feat[feat['labels'] == i].index)
         ris[f'cluster_{i}_dist'] = np.mean(pdist(index))
+
+
     return ris
