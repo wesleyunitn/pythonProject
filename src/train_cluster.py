@@ -41,10 +41,12 @@ estimators_db = [('scaler',StandardScaler()),('pca',PCA()),('dbscan',DBSCAN())]
 pipekm = Pipeline(steps=estimators_km)
 pipedb = Pipeline(steps = estimators_db)
 #
-scorer = make_scorer(my_silhouette_score,greater_is_better= False)
+# scorer = make_scorer(my_silhouette_score,greater_is_better= False)
 param = {'pca__n_components':[2,3,4,8],'kmean__n_clusters':[5,6,7,8,9]}
-gsearchkm = GridSearchCV(pipekm,param_grid=param, scoring = my_davies_score, verbose= True, return_train_score= True)
+gsearchkm = GridSearchCV(pipekm,param_grid=param, scoring = my_silhouette_score, verbose= True, return_train_score= True)
 gsearchkm.fit(pk1.feature)
 print(gsearchkm.best_params_)
 
-#
+# paramdb = {'pca__n_components':[2,3,4,8],'dbscan__eps':np.linspace(0.2,1,6),'dbscan__min_samples': [2,3,4,5,6,7]}
+# gsearchdb = GridSearchCV(pipedb,param_grid=paramdb, scoring = my_davies_score, verbose= True, return_train_score= True)
+# gsearchdb.fit(pk1.feature)
