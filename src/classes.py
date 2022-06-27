@@ -274,6 +274,8 @@ def plot_spettri(peak_obj1: Spettri, peak_obj2: Spettri = None, nspettri=4, keys
             axes[n, 1].legend()
 
 
+
+
 def plot_database_peaks(datab, datab_peaks, nplot=3, keys = None):
     ''' Per plottare spettri del database con i picchi'''
 

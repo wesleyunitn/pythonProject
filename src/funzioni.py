@@ -20,32 +20,40 @@ def seriepeak(serie, npicchi=10, prop=None,sortby='prominences',cond=None):
       e come ultima colonna l'indice corrispondente alla serie originale dei valori del picco
 
       :param serie: è una serie scelta tra le colonne del dataframe nell'attributo data di questa classe (spettri)
+      :param npicchi: numero di picchi da tenere, se None tiene tutti i picchi trovati con le condizioni
       """
-    if prop is None:
+
+    if prop is None:  # utile solo se viene direttamente chiamata seriepeak
         prop={'height': (None,None), 'prominence' : (None,None), 'width' : (None,None)}
 
     peakobj = find_peaks(serie, **prop)
-
+    # CONTIENE LE PROPRIETà DEI PICCHI
     da = pd.DataFrame(peakobj[1])
+    # E GLI INDICI
     da['peak_ind' + f'_{serie.name}'] = peakobj[0]
 
-    da1 = da.sort_values(sortby, axis=0, ascending=False)
+    # da1 = da.sort_values(sortby, axis=0, ascending=False)
     if sortby is not None:
         da.sort_values(by=sortby, inplace= True, ascending= False)
-    if npicchi!=None:
+    if (npicchi is not None) & (sortby is not None):
         return da.iloc[:npicchi, :].reset_index(drop=True)
     else:
-        # da comlpetare per non fare il numero di picchi fissatiii
+        # SISTEMO PER IL CASO CONDIZIONALE
         return da[da[sortby]>=cond].reset_index(drop=True)
 
-def peakfinder(database, prop = None, drop_ind = True, npicchi = 10, sortby = 'prominences', cond = None, norm = True):
+#checked1
+def peakfinder(database, prop = None, drop_ind = False, npicchi = 10, sortby = 'prominences', cond = None, norm = True):
+    ''' analoga al metod della classe Spettri
+    '''
     if prop == None :
         prop = {'prominence': (None, None), 'height': (None, None),'width': (None,None), 'wlen': 50}
     dtbase_peaks = dict()
     for key, val in database.items():
         if norm :
             val['H']= normalizer(val['H'], val['K'])
+        # ora chiama la funzione seriepeak che effettivamente trova i picchi per uno spettro
         dtbase_peaks[key] = seriepeak(val['H'], prop= prop, npicchi = npicchi, cond = cond, sortby = sortby )
+        # AGGIUNGO LA COLONNA CON I RISPETTIVI NUMERI D'ONDA
         dtbase_peaks[key]['K'] = val.loc[dtbase_peaks[key]['peak_ind_H'], 'K'].values
         if drop_ind:
             dtbase_peaks[key].drop('peak_ind_H', axis = 1, inplace = True)
@@ -158,6 +166,21 @@ def featextract2_df(picchif, prop = None ):
 
     design_df.index = picchif.keys()
     return design_df
+
+
+# FINE SEZIONE FUNZIONI ANALOGH AI METODI PER LA CLASSE sPETTRI
+#
+#
+#
+#
+
+
+
+
+
+
+
+
 
 
 def distpoint(labels_ordinated):
