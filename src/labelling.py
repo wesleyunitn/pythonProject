@@ -151,52 +151,52 @@ def static_plot_compare_labels(peak_obj, df_feature, labels, dir_title):
 
 #  le righe di codice sotto sono il prototipo con cui hio geerato le labels
 # commentate per poter chiamare il modulo da notebook
-
-
-pk1 = Spettri(datas.data1)
-pk2 = Spettri(datas.data2)
-
-pk1.go()
-pk2.go()
-
-database_picchi = funzioni.peakfinder(datas.database, prop = pk1.prop)
-database_feat1 = funzioni.featextract1_df(database_picchi)
-database_feat2 = funzioni.featextract2_df(database_picchi)
-#
-
-# scaled_pk1_feat1 = weighthed_scale(pk1.feature,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
-# scaled_pk1_feat2 = weighthed_scale(pk1.feature2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)] )
-#
-# scaled_pk2_feat1 = weighthed_scale(pk2.feature,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
-# scaled_pk2_feat2 = weighthed_scale(pk2.feature2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)] )
 #
 #
-# scaled_database_feat2 = weighthed_scale(database_feat2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)])
-# scaled_database_feat1 = weighthed_scale(database_feat1,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
-
-wr11,score11 = wrap(pk1.feature,database_feat1)
-wr12,score12 = wrap(pk1.feature2,database_feat2)
-
-wr21,score21 = wrap(pk2.feature,database_feat1)
-wr22, score22 = wrap(pk2.feature2,database_feat2)
-
-
-print(np.sum(wr11==wr12))
-print(np.sum(wr21==wr22))
+# pk1 = Spettri(datas.data1)
+# pk2 = Spettri(datas.data2)
+#
+# pk1.go()
+# pk2.go()
+#
+# database_picchi = funzioni.peakfinder(datas.database, prop = pk1.prop)
+# database_feat1 = funzioni.featextract1_df(database_picchi)
+# database_feat2 = funzioni.featextract2_df(database_picchi)
+# #
+#
+# # scaled_pk1_feat1 = weighthed_scale(pk1.feature,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
+# # scaled_pk1_feat2 = weighthed_scale(pk1.feature2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)] )
+# #
+# # scaled_pk2_feat1 = weighthed_scale(pk2.feature,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
+# # scaled_pk2_feat2 = weighthed_scale(pk2.feature2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)] )
+# #
+# #
+# # scaled_database_feat2 = weighthed_scale(database_feat2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)])
+# # scaled_database_feat1 = weighthed_scale(database_feat1,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
+#
+# wr11,score11 = wrap(pk1.feature,database_feat1)
+# wr12,score12 = wrap(pk1.feature2,database_feat2)
+#
+# wr21,score21 = wrap(pk2.feature,database_feat1)
+# wr22, score22 = wrap(pk2.feature2,database_feat2)
+#
+#
+# print(np.sum(wr11==wr12))
+# print(np.sum(wr21==wr22))
 
 # wr11_scaled, score11_scaled = wrap(scaled_pk1_feat1, scaled_database_feat1)
 # wr12_scaled,score12_scaled = wrap(scaled_pk1_feat2, scaled_database_feat2)
 #
 # wr21_scaled, score21_scaled = wrap(scaled_pk2_feat1, scaled_database_feat1)
 # wr22_scaled,score22_scaled = wrap(scaled_pk2_feat2, scaled_database_feat2)
-
-# #
-static_plot_compare_labels(pk1,pk1.feature,wr11, 'pk1_feat1')
-static_plot_compare_labels(pk1,pk1.feature2,wr12,'pk1_feat2')
-
-static_plot_compare_labels(pk2,pk2.feature,wr21,'pk2_feat1')
-static_plot_compare_labels(pk2,pk2.feature2,wr22,'pk2_feat2')
 #
+# # #
+# static_plot_compare_labels(pk1,pk1.feature,wr11, 'pk1_feat1')
+# static_plot_compare_labels(pk1,pk1.feature2,wr12,'pk1_feat2')
+#
+# static_plot_compare_labels(pk2,pk2.feature,wr21,'pk2_feat1')
+# static_plot_compare_labels(pk2,pk2.feature2,wr22,'pk2_feat2')
+# #
 # static_plot_compare_labels(pk1,pk1.feature,wr11_scaled,'pk1_feat1_scaled')
 # static_plot_compare_labels(pk1,pk1.feature2,wr12_scaled,'pk1_feat2_scaled')
 #
