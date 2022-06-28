@@ -9,24 +9,63 @@ from sklearn.compose import ColumnTransformer
 import matplotlib.pyplot as plt
 import os
 
-def find_similar_material(spettrofeat, database, spettro='row1col1', printa=True):
-    '''' dato un spettro di feature di un campione di spettri ed un database'''
+pd.set_option('display.max_rows',50)
+pd.set_option('display.max_columns',50)
+
+
+def euclidean_weighted_arr(arr1,arr2,W = None):
+    '''
+    PER ARRAYYYYY 1D
+
+    @param arr1:
+    @param arr2:
+    @param W:
+    @return:
+    '''
+    if W is None:
+        W = np.ones(arr2.shape)
+
+    if (len(arr1)!=len(arr2))  | (len(arr1)!=len(W)):
+        print('PROBLEMAPROBLEMAPROBLEMA')
+        return
+
+    else:
+
+        sum = 0
+        for n in range(len(arr1)):
+            sum+= W[n]*(arr1[n]-arr2[n])**2
+        ris = np.sqrt(sum)
+        del sum
+        return ris
+
+
+def find_similar_material(spettrofeat, database, spettro='row1col1', printa=True, W = None):
+    ''''dato un oggetto Spettro.feature o Spettro.feature2 e un oggetto analogo Database_feat1  [----> non è un attributo della classe Spettri]
+    confronta UNA sola riga del primo con tutte quelle del secondo e trova la più simiile
+
+    return: -dist_dic: dizionario con le distanze per ogni materiale,
+            -similar_material : nome del materiale più simile
+            -min : la distanza minima ----- per averla in modo veloce
+
+    '''
     dist_dic = dict()
     for key in database.index:
-        dist_dic[key] = euclidean(spettrofeat.loc[spettro, :], database.loc[key, :])
+        dist_dic[key] = euclidean_weighted_arr(spettrofeat.loc[spettro, :], database.loc[key, :], W)
     min = np.min(list(dist_dic.values()))
     index = list(dist_dic.values()).index(min)
     if printa:
         print(f'+ simile = {list(dist_dic.keys())[index]} con {min}')
-    return dist_dic, list(dist_dic.keys())[index], min
+
+    similar_material = list(dist_dic.keys())[index]
+    return dist_dic, similar_material, min
 
 
-def wrap(spettrofeat, database):
+def wrap(spettrofeat, database, W = None, printa = False):
     ''' wrapper di find_similar_material con tutto un database di spettri'''
     labels = []
     scores = []
     for key in spettrofeat.index:
-        _j, label, score = find_similar_material(spettrofeat, database, spettro=key, printa=False)
+        _j, label, score = find_similar_material(spettrofeat, database, W = W,  spettro=key, printa=printa)
         scores.append(score)
         labels.append(label)
 
@@ -34,11 +73,34 @@ def wrap(spettrofeat, database):
 
 
 def weighthed_scale(df_to_transf,ranges, second_df_to_transf = None, save = False, **columns_bunch):
+    '''  Funzione per riscalare le colonne di un dataframe con MinMax velocemente
+
+
+
+    :second_second_df_transf: se specificato un secondo dataframe con nomi delle colonne UGUALI, trasforma anchesso, ma SENZA refittare i trasformatori precedentemente usati
+    :ranges: lista di tuple che specifichi i range con cui riscalare i diversi gruppi di colonne
+    : columns_bunch : DIZIONARIO o KEYWORD ARGUMENTS ogniuna con un nome significativo per il gruppo di colonne
+     assegnate ad una lista di identificativi delle colonne del df da riscalare
+
+    @note
+    non serve  trasformare tutte le colonne del dataframe
+    ma non se ne può trasformare una sola ------ credo sia dovuto proprio a Min Max scaler
+    '''
     transformers = []
     bunch_names = list(columns_bunch.keys())
     cols_flattened = []
-    if len(ranges) != len(columns_bunch):
+
+
+    if len(ranges) != len(columns_bunch): # minimo degug
         print('PROBLEMAPROBLEMAPROBLEMA')
+
+
+    # PROVO A MANTENERE LA MEDIA PER TENERE LE CARTTERISTICHESEMPRE CENTRATE NELLO STESSO PUNTO MA 'STIRATE'
+    # for n in range(len(ranges)):
+    #     temp_diff = ranges[n][1]-ranges[n][0]
+    #     mean = np.mean(df_to_transf[columns_bunch.keys()[n]])
+    #
+
     for n,cols in enumerate(columns_bunch.values()):
         nametemp = bunch_names[n]
         scalertemp = MinMaxScaler(feature_range=ranges[n])
@@ -58,7 +120,13 @@ def weighthed_scale(df_to_transf,ranges, second_df_to_transf = None, save = Fals
     else:
         return df_transf
 
+
+
+
 def static_plot_compare_labels(peak_obj, df_feature, labels, dir_title):
+    ''' Serve a valutare più velocemente l'efficacia del labeling
+    e crea una raccolta di plot dei picchi con un labeling sui materialio del database
+    '''
 
     dfcopy = pd.DataFrame(df_feature, copy = True)
     dfcopy['labels'] = labels
@@ -81,50 +149,30 @@ def static_plot_compare_labels(peak_obj, df_feature, labels, dir_title):
 
 
 
+#  le righe di codice sotto sono il prototipo con cui hio geerato le labels
+# commentate per poter chiamare il modulo da notebook
 
 
-    # scalerdb_mean = MinMaxScaler(feature_range=(0, 400))
-    # scalerpk1_mean = MinMaxScaler(feature_range=(0, 400))
-    # scalerdb_std = MinMaxScaler(feature_range=(0, 150))
-    # scalerpk1_std = MinMaxScaler(feature_range=(0, 150))
-    # scalerdb_K = MinMaxScaler(feature_range=(0, 600))
-    # scalerpk1_K = MinMaxScaler(feature_range=(0, 600))
-    # # scalo soloo le colonne non inerenti al numero d'onda, perchè mi va bene che ad esso venga data più importanza
-    # col_to_scale_mean = [f'{prop}_mean' for prop in ['prominences', 'peak_heights']]
-    # col_to_scale_std = [f'{prop}_std' for prop in ['prominences', 'peak_heights']]
-    # col_to_scale_K = ['K_std']
-    # coltranfpk = ColumnTransformer(transformers=[('scaled_means', scalerpk1_mean, col_to_scale_mean),
-    #                                              ('scaled_stds', scalerpk1_std, col_to_scale_std),
-    #                                              ('scaled_K', scalerpk1_K, col_to_scale_K)])
-    # coltranfdb = ColumnTransformer(transformers=[('scaled_means', scalerdb_mean, col_to_scale_mean),
-    #                                              ('scaled_std', scalerdb_std, col_to_scale_std),
-    #                                              ('scaled_K', scalerdb_K, col_to_scale_K)])
-    # # Ricreo il dataframe con le colonne non scalate per prime
-    # scaled_database_feat1 = pd.DataFrame(database_feat1, columns=['K_mean'], index=database_feat1.index)
-    # scaled_pk1_feat1 = pd.DataFrame(pk1.feature, columns=['K_mean'], index=pk1.feature.index)
-    # # AGGIUNGO  le colonne riscalate
-    # scaled_database_feat1[col_to_scale_K + col_to_scale_mean + col_to_scale_std] = coltranfdb.fit_transform(
-    #     database_feat1)
-    # scaled_pk1_feat1[col_to_scale_K + col_to_scale_mean + col_to_scale_std] = coltranfpk.fit_transform(pk1.feature)
-
-#
-pk2 = Spettri(datas.data2)
 pk1 = Spettri(datas.data1)
-pk2.peakfinder()
-pk1.peakfinder()
-pk2.featextract(statlist=['mean','std','50%'])
-pk1.featextract(statlist=['mean','std','50%'])
-pk1.featextract2()
-pk2.featextract2()
+pk2 = Spettri(datas.data2)
+
+pk1.go()
+pk2.go()
+
 database_picchi = funzioni.peakfinder(datas.database, prop = pk1.prop)
-database_feat1 = funzioni.featextract1_df(database_picchi,statlist=['mean','std','50%'])
+database_feat1 = funzioni.featextract1_df(database_picchi)
 database_feat2 = funzioni.featextract2_df(database_picchi)
+#
 
-scaled_pk1_feat1 = weighthed_scale(pk1.feature,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
-scaled_database_feat1 = weighthed_scale(database_feat1,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
-
-scaled_pk1_feat2 = weighthed_scale(pk1.feature2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)] )
-scaled_database_feat2 = weighthed_scale(database_feat2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)])
+# scaled_pk1_feat1 = weighthed_scale(pk1.feature,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
+# scaled_pk1_feat2 = weighthed_scale(pk1.feature2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)] )
+#
+# scaled_pk2_feat1 = weighthed_scale(pk2.feature,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
+# scaled_pk2_feat2 = weighthed_scale(pk2.feature2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)] )
+#
+#
+# scaled_database_feat2 = weighthed_scale(database_feat2,[(100,1000),(0,600),(0,400),(0,200)],pk_K = [f'pk_{n}_K' for n in range(1,11)], pk_hei = [f'pk_{n}_peak_heights' for n in range(1,11)], pk_pro= [f'pk_{n}_prominences' for n in range(1,11)], pk_widths = [f'pk_{n}_widths' for n in range(1,11)])
+# scaled_database_feat1 = weighthed_scale(database_feat1,[(100,1000),(0,600),(0,400)],K_mean = ['K_mean'], p_h = ['prominences_mean','peak_heights_mean','K_50%'], std_s= ['prominences_std','K_std','peak_heights_std'])
 
 wr11,score11 = wrap(pk1.feature,database_feat1)
 wr12,score12 = wrap(pk1.feature2,database_feat2)
@@ -132,5 +180,28 @@ wr12,score12 = wrap(pk1.feature2,database_feat2)
 wr21,score21 = wrap(pk2.feature,database_feat1)
 wr22, score22 = wrap(pk2.feature2,database_feat2)
 
-wr11_scaled, score11_scaled = wrap(scaled_pk1_feat1, scaled_database_feat1)
-wr12_scaled,score12_scaled = wrap(scaled_pk1_feat2, scaled_database_feat2)
+
+print(np.sum(wr11==wr12))
+print(np.sum(wr21==wr22))
+
+# wr11_scaled, score11_scaled = wrap(scaled_pk1_feat1, scaled_database_feat1)
+# wr12_scaled,score12_scaled = wrap(scaled_pk1_feat2, scaled_database_feat2)
+#
+# wr21_scaled, score21_scaled = wrap(scaled_pk2_feat1, scaled_database_feat1)
+# wr22_scaled,score22_scaled = wrap(scaled_pk2_feat2, scaled_database_feat2)
+
+# #
+static_plot_compare_labels(pk1,pk1.feature,wr11, 'pk1_feat1')
+static_plot_compare_labels(pk1,pk1.feature2,wr12,'pk1_feat2')
+
+static_plot_compare_labels(pk2,pk2.feature,wr21,'pk2_feat1')
+static_plot_compare_labels(pk2,pk2.feature2,wr22,'pk2_feat2')
+#
+# static_plot_compare_labels(pk1,pk1.feature,wr11_scaled,'pk1_feat1_scaled')
+# static_plot_compare_labels(pk1,pk1.feature2,wr12_scaled,'pk1_feat2_scaled')
+#
+# static_plot_compare_labels(pk2,pk2.feature,wr21_scaled,'pk2_feat1_scaled')
+# static_plot_compare_labels(pk2,pk2.feature2,wr22_scaled,'pk2_feat2_scaled')
+#
+
+

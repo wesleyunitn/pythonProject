@@ -13,7 +13,7 @@ class Spettri():
 
     """
 
-    def __init__(self, data, npicchi=10, prop=None, cond=None, sortby='prominences'):
+    def __init__(self, data, npicchi=10, prop=None, cond=None, sortby='prominences',norm = True):
         """ ogni parametro viene memorizzato in un attributo dallo stesso nome
 
         :param prop: DIZIONARIO di proprietà e valori da passare a scipy.signal.find_peaks, inizializzata a non non limita la ricercain base a quei parametri
@@ -26,7 +26,7 @@ class Spettri():
         :param data: i dati sotto forma di dataframe (come in data_load)
             """
         if prop is None:
-            prop = {'height': (None,None),'prominence': (None,None), 'width':(None,None)}
+            prop = {'height': (None,None),'prominence': (None,None), 'width':(None,None), 'wlen' : 150}
         self.data = data
         self.index = ['K'] + [f'row{i}col{j}' for i in range(1, 12) for j in range(1, 12)]
         self.prop = prop
@@ -34,7 +34,10 @@ class Spettri():
         self.cond = cond
         self.sortby = sortby
 
-          # lo aggiungo da subito dfato che la normalizzazione non è un opzione nel mio modello
+        self.norm = True
+        if self.norm :
+            self.normalizer()
+
 
 
 
@@ -77,7 +80,7 @@ class Spettri():
 
         crea un attributo PICCHI come un dizionario di un dataframe in cui ogni dataframe corrisponde come chiave l'identificativo dello spettro (come negli indici di Spettri.data)
         """
-        if norm == True:
+        if (norm == True) | (self.norm == True):
             self.normalizer()
 
         datalist = []
@@ -162,52 +165,37 @@ class Spettri():
         design_df.index = self.index[1:]
         self.feature2 = design_df
 
-# class Database():
-#
-#
-#     def __init__(self, database, npicchi=10, prop=None,sortby='prominences',cond=None):
-#         self.data = database
-#         if prop == None:
-#             prop = {'height': (None,None), 'prominence' : (None,None), 'width' : (None,None)}
-#         self.prop = prop
-#         self.npicchi = npicchi
-#         self.sortby = sortby
-#         self.cond = cond
-#
-#     def __seriepeak__(self, serie):
-#         # dictprop serve UNICAMENTE (POCO COMPLETA) a passare argomenti alla funzione find_peaks, da cui il dunderscore
-#         """prende in input una serie-spettro e ritorna un DataFrame con diverse colonne a seconda delle proprietà scelte per i picchi
-#           e come ultima colonna l'indice corrispondente alla serie originale dei valori del picco:
-#           cond: float che indica la soglia minima da utilizzare come filtro sulla proprietà sortby per i picchi
-#           sortyby is not None---> colonna con cui la serie verrà riordinata
-#           npicchi is None---> si esegue una scelta sui picchi da tenere secondo  cond e sortby se entrambi sono diversi da None
-#           altrimenti, viene ritornato tutto il risultato di find_peaks con le proprietà specificate sull'attributoo di classe prop
-#
-#           :return : pd.DataFrame in cui ogni riga corrisponde un picco cui le corrispondenti proprietà ritornate da find_peaks() e una colonna
-#            di indici che lo mappa nella pd.series originale
-#           """
-#
-#         peakobj = find_peaks(serie, **self.prop)
-#         # DEVO MODIFICARE, NEL CASO PROP FOSSE NONE PER NON AVERE ERRORE
-#         da = pd.DataFrame(peakobj[1], copy=True)
-#         da['peak_ind' + f'_{serie.name}'] = peakobj[0]
-#
-#         if self.sortby is not None:
-#             da.sort_values(self.sortby, axis=0, ascending=False, inplace=True)
-#
-#         if self.npicchi is not None:
-#             return da.iloc[:self.npicchi, :].reset_index(drop=True)
-#         elif (self.cond is not None) & (self.sortby is not None):
-#             # solo se cond e sortby non sono none! ritorna i picchi che per la proprietà indicata da sortby superano almeno una certa soglia data da cond
-#             return da[da[self.sortby] >= self.cond].reset_index(drop=True)
-#
-#         else:
-#             return da.reset_index(drop=True)
+
+    def go(self):
+        self.peakfinder()
+        self.featextract()
+        self.featextract2()
+
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
+# FUNZIONI UTILI SOTTO
 
 
 
 
 
+
+## PLOT PEAKS è DIVENTATA POCO UTILE  PERCHè PLOT SPETTRI GLI HA FREGATO LE FUNIZONALITà
 def plot_peaks(peak_obj: Spettri, nspettri=3, keys = None):
     ''' accetta un oggetto Spettri()) su cui è stata eseguita la ricerca dei picchi plotta un numero variabile
     di spettri scelti casualmente dal campione con relativi picchi gia memorizzati in Spettri.picchi'''
@@ -224,7 +212,7 @@ def plot_peaks(peak_obj: Spettri, nspettri=3, keys = None):
         axes[n].scatter(peak_obj.picchi[keypeak].K, peak_obj.picchi[keypeak]['peak_heights'], color='red')
 
 
-def plot_spettri(peak_obj1: Spettri, peak_obj2: Spettri = None, nspettri=4, keys = None, same_ind= False, peaks = False):
+def plot_spettri(peak_obj1: Spettri, peak_obj2: Spettri = None, nspettri=4, keys = None, same_ind= False, peaks = False , sharey = False):
     """ Plotta un numero fissato di spettri da uno o due oggetti spettri
     nspettri : numero di spettri per ogni campione da plottare --> numero di righe del subplot
     keys: lista di identificativi di spettri da selezionare per il plot ---> se None vengono scelti casualmente
@@ -243,7 +231,7 @@ def plot_spettri(peak_obj1: Spettri, peak_obj2: Spettri = None, nspettri=4, keys
     else:
         chosen1 = choice(peak_obj1.data.drop('K', axis=1).columns, nspettri)
 
-    fig, axes = plt.subplots(nspettri, nobj, figsize=(20, 18), sharey=True)
+    fig, axes = plt.subplots(nspettri, nobj, figsize=(20, 18), sharey= sharey)
     if nobj == 1:
         if nspettri == 1:
             axes.plot(peak_obj1.data['K'], peak_obj1.data[chosen1[0]], label=f'campione_1_spettro_{chosen1[0]}')

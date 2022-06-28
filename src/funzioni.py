@@ -24,7 +24,7 @@ def seriepeak(serie, npicchi=10, prop=None,sortby='prominences',cond=None):
       """
 
     if prop is None:  # utile solo se viene direttamente chiamata seriepeak
-        prop={'height': (None,None), 'prominence' : (None,None), 'width' : (None,None)}
+        prop={'height': (None,None), 'prominence' : (None,None), 'width' : (None,None), 'wlen':150}
 
     peakobj = find_peaks(serie, **prop)
     # CONTIENE LE PROPRIETà DEI PICCHI
@@ -46,7 +46,7 @@ def peakfinder(database, prop = None, drop_ind = False, npicchi = 10, sortby = '
     ''' analoga al metod della classe Spettri
     '''
     if prop == None :
-        prop = {'prominence': (None, None), 'height': (None, None),'width': (None,None), 'wlen': 50}
+        prop = {'prominence': (None, None), 'height': (None, None),'width': (None,None), 'wlen': 150}
     dtbase_peaks = dict()
     for key, val in database.items():
         if norm :
@@ -166,6 +166,10 @@ def featextract2_df(picchif, prop = None ):
 
     design_df.index = picchif.keys()
     return design_df
+
+
+
+
 
 
 # FINE SEZIONE FUNZIONI ANALOGH AI METODI PER LA CLASSE sPETTRI
