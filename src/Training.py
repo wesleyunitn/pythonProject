@@ -17,7 +17,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
-
+import numpy as np
 
 
 pk1 = Spettri(data1)
@@ -35,8 +35,21 @@ f1 = make_scorer(f1_score, average = 'macro')
 # def f1(y_true,y_pred, *vars, **keyargs):
 #     return f1_score(y_true, y_pred, *vars, average = None, **keyargs)
 
-def train_gridsearch(pipe, X,y,cv, param_grid, scoring = f1 ):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=67)
+def train_gridsearch(pipe, X,y,cv, param_grid, scoring = f1 ,exclude_single = False):
+
+
+    if exclude_single:
+        single_material = []
+        y_copy = list(y)
+        X_copy = pd.DataFrame(X, copy=True)
+        for n in range(len(np.unique(y))):
+            if np.unique(y, return_counts=True)[1][n] == 1:
+                single_material.append(np.unique(y, return_counts=True)[0][n])
+                y_copy.remove(np.unique(y, return_counts=True)[0][n])
+                X_copy.drop(X.index[n], inplace=True)
+        X_train, X_test, y_train, y_test = train_test_split(X_copy, y_copy, test_size=0.2, random_state=67)
+    else:
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=67)
     gsearch = GridSearchCV(pipe, param_grid=param_grid, scoring=scoring, cv= cv)
     gsearch.fit(X_train,y_train)
     predicted_total = gsearch.predict(X)

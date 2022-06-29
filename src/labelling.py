@@ -33,7 +33,7 @@ def euclidean_weighted_arr(arr1,arr2,W = None):
 
         sum = 0
         for n in range(len(arr1)):
-            sum+= W[n]*(arr1[n]-arr2[n])**2
+            sum += W[n]*(arr1[n]-arr2[n])**2
         ris = np.sqrt(sum)
         del sum
         return ris
@@ -146,6 +146,7 @@ def static_plot_compare_labels(peak_obj, df_feature, labels, dir_title):
         plot_spettri(peak_obj, peaks = True,  keys = dfcopy[ dfcopy['labels'] == i].index)
         plt.savefig(f'.\{dir_title}\{i}')
         plt.close()
+        datas.save_data(labels,f'.\{dir_title}\labels')
 
 
 

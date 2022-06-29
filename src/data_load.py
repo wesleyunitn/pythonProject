@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-
+import pickle
 paths = ['..\data\S1_bkg_mapA_11x11.txt',
          '..\data\S1_mapA_11x11.txt',
          '..\data\S2_bkg_mapA_11x11.txt',
@@ -23,4 +23,50 @@ for i in iterpath:
     if (i.name != 'RRUFF_list.txt') & (i.name != 'BANK_LIST.txt') :
     # print(i.name)
         database[f'{i.name[:-4]}'] = pd.read_csv(f'..\data\Database_Raman' +f'\{i.name}', names=['K','H'], delim_whitespace=True )
+
+
+
+
+
+
+
+
+
+
+
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+#FUNZIONI SALVATAGGIO E LOADING DATA
+
+
+def save_data(obj,filename):
+    try:
+        with open(filename,'wb') as f:
+            pickle.dump(obj,f,protocol = pickle.HIGHEST_PROTOCOL)
+    except Exception as ex:
+        print('errorrrr')
+
+def load_data(filename):
+    try:
+        with open(filename,'rb') as f:
+            return pickle.load(f)
+    except Exception as ex:
+        print('Error durin pockling')
+
+
+
+
+
+
+
+
+
+
 

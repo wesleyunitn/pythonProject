@@ -288,3 +288,8 @@ def plot_database_peaks(datab, datab_peaks, nplot=3, keys = None):
 
 
 
+
+def plot_spettri_material(pk_obj,pk_feat,labels, material):
+    pk_feat['labels'] = labels
+    plot_spettri(pk_obj,keys =pk_feat[ pk_feat['labels'] == material ].index , peaks = True)
+    del pk_feat['labels']
